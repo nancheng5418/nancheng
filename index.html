@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050a14">
+<title>南城导航首页</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%2306b6d4'/%3E%3Cpolygon points='10 8 16 12 10 16 10 8' fill='white'/%3E%3C/svg%3E">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --card-bg: rgba(10, 18, 35, 0.25);
+    --card-border: rgba(6, 182, 212, 0.18);
+    --pill-bg: rgba(10, 18, 35, 0.65);
+    --text: #e2f4ff;
+    --text-dim: rgba(226, 244, 255, 0.55);
+    --accent: #06b6d4;
+    --accent2: #8b5cf6;
+    --glow: 0 0 12px rgba(6, 182, 212, 0.35);
+  }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
+    color: var(--text);
+    background: #050a14;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+  .bg {
+    position: fixed; inset: 0;
+    background:
+      url("https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/FHTGb0gzqoJCfHxO8QzcLMwwngg") center/cover no-repeat,
+      radial-gradient(ellipse at 20% 0%, rgba(6,182,212,0.22) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(139,92,246,0.22) 0%, transparent 50%),
+      #050a14;
+    z-index: -2;
+  }
+  .bg::before {
+    content: ""; position: absolute; inset: -40px;
+    background-image:
+      linear-gradient(rgba(6,182,212,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(6,182,212,0.08) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    animation: gridMove 4s linear infinite;
+  }
+  @keyframes gridMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(40px, 40px); }
+  }
+  .bg::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(5,10,20,0.4) 0%, rgba(5,10,20,0.3) 40%, rgba(5,10,20,0.85) 100%);
+  }
+  .wrap {
+    max-width: 480px; margin: 0 auto;
+    padding: env(safe-area-inset-top) 18px calc(env(safe-area-inset-bottom) + 28px);
+    min-height: 100vh; display: flex; flex-direction: column;
+  }
+  .logo-wrap { display: flex; justify-content: center; padding-top: 18px; margin-bottom: 10px; }
+  .logo-circle {
+    width: 80px; height: 80px; border-radius: 50%;
+    object-fit: cover; border: 2px solid rgba(6,182,212,0.5);
+    box-shadow: 0 0 20px rgba(6,182,212,0.4);
+  }
+  .topbar { display: flex; align-items: center; gap: 10px; padding-top: 0; margin-bottom: 14px; }
+  .clock-pill {
+    min-width: 52px; height: 32px; border-radius: 10px;
+    background: var(--pill-bg); border: 1px solid var(--card-border);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; color: var(--accent);
+    font-variant-numeric: tabular-nums; letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+  .topbar h1 {
+    flex: 1; font-size: 20px; font-weight: 700; text-align: center; letter-spacing: 2px;
+    background: linear-gradient(90deg, #22d3ee, #8b5cf6, #22d3ee);
+    background-size: 200% auto;
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: titleFlow 4s linear infinite;
+  }
+  @keyframes titleFlow {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+  }
+  .iconbtn {
+    min-width: 40px; height: 40px; border-radius: 12px;
+    border: 1px solid var(--card-border);
+    background: var(--pill-bg);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    color: var(--text); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; transition: all 0.2s; text-decoration: none;
+  }
+  .iconbtn:active { transform: scale(0.92); border-color: var(--accent); box-shadow: var(--glow); }
+  .iconbtn svg { width: 20px; height: 20px; }
+  .iconbtn.pill-text { padding: 0 14px; font-size: 13px; gap: 6px; }
+  .search {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--pill-bg); border: 1px solid var(--card-border);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-radius: 14px; padding: 11px 16px; margin-bottom: 12px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .search:focus-within { border-color: var(--accent); box-shadow: var(--glow); }
+  .search svg { width: 18px; height: 18px; color: var(--accent); flex-shrink: 0; }
+  .search input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-size: 15px; }
+  .search input::placeholder { color: var(--text-dim); }
+  .notice {
+    display: flex; align-items: flex-start; gap: 9px;
+    background: rgba(6, 182, 212, 0.08);
+    border: 1px solid rgba(6, 182, 212, 0.25);
+    border-radius: 12px; padding: 10px 13px; margin-bottom: 14px;
+    font-size: 12px; line-height: 1.5; color: rgba(226, 244, 255, 0.85);
+  }
+  .notice svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; color: var(--accent); }
+  .meta { display: flex; align-items: center; gap: 8px; margin-bottom: 22px; }
+  .status {
+    flex: 1; display: flex; align-items: center; gap: 7px;
+    background: var(--pill-bg); border: 1px solid var(--card-border);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-radius: 999px; padding: 9px 14px; font-size: 12px;
+    color: var(--text-dim); white-space: nowrap;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 10px rgba(34,197,94,0.8); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .section-title {
+    font-size: 15px; font-weight: 600; margin: 16px 0 12px;
+    padding-bottom: 8px; padding-left: 10px;
+    border-left: 3px solid var(--accent);
+    letter-spacing: 1px; color: var(--text);
+  }
+  .grid { display: grid; gap: 11px; }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .card {
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 9px;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px; padding: 14px 8px 12px;
+    text-decoration: none; color: var(--text);
+    transition: all 0.2s;
+    overflow: hidden;
+    animation: cardIn 0.4s ease-out backwards;
+  }
+  .card:nth-child(1) { animation-delay: 0.05s; }
+  .card:nth-child(2) { animation-delay: 0.1s; }
+  .card:nth-child(3) { animation-delay: 0.15s; }
+  .card:nth-child(4) { animation-delay: 0.2s; }
+  .card:nth-child(5) { animation-delay: 0.25s; }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card::before {
+    content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    animation: scan 3s linear infinite;
+  }
+  @keyframes scan {
+    0% { left: -50%; }
+    100% { left: 100%; }
+  }
+  .card:active {
+    transform: scale(0.95);
+    border-color: var(--accent);
+    box-shadow: var(--glow);
+    background: rgba(6, 182, 212, 0.1);
+  }
+  .icon {
+    width: 54px; height: 54px; border-radius: 14px;
+    background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(139,92,246,0.15));
+    border: 1px solid rgba(6,182,212,0.2);
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+  .icon svg { width: 28px; height: 28px; color: var(--accent); }
+  .cat-card .icon { width: 64px; height: 64px; border-radius: 16px; }
+  .cat-card .icon svg { width: 32px; height: 32px; }
+  .label { font-size: 12.5px; text-align: center; line-height: 1.25; color: var(--text); }
+  .empty { text-align: center; color: var(--text-dim); padding: 40px 0; font-size: 14px; }
+  footer { margin-top: auto; text-align: center; color: rgba(226,244,255,0.3); font-size: 11px; padding-top: 24px; letter-spacing: 1px; }
+  .toast {
+    position: fixed; left: 50%; bottom: 80px;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(5, 15, 30, 0.9); color: #fff; padding: 10px 20px;
+    border-radius: 999px; font-size: 13px; opacity: 0; pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s; z-index: 99;
+    backdrop-filter: blur(10px); white-space: nowrap;
+    border: 1px solid var(--accent);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .donate-fab {
+    position: fixed; right: 16px; bottom: 100px; z-index: 50;
+    background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+    color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 999px;
+    padding: 12px 18px; font-size: 13px; font-weight: 600;
+    box-shadow: 0 6px 24px rgba(6, 182, 212, 0.4);
+    cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .donate-fab:active { cursor: grabbing; }
+  .donate-fab svg { width: 16px; height: 16px; }
+  .modal-mask {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    z-index: 100; display: none; align-items: center; justify-content: center; padding: 24px;
+  }
+  .modal-mask.show { display: flex; }
+  .modal-box {
+    background: rgba(8, 15, 30, 0.95); border: 1px solid rgba(6,182,212,0.3);
+    border-radius: 20px; padding: 24px 20px 20px;
+    max-width: 340px; width: 100%; text-align: center; position: relative;
+    box-shadow: 0 0 40px rgba(6,182,212,0.2);
+  }
+  .modal-close {
+    position: absolute; top: 10px; right: 10px;
+    width: 30px; height: 30px; border-radius: 50%; border: none;
+    background: rgba(255,255,255,0.1); color: #fff; font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .modal-box h3 { font-size: 16px; margin-bottom: 14px; color: var(--text); }
+  .modal-box img { width: 100%; border-radius: 12px; margin-bottom: 16px; display: block; }
+  .modal-download {
+    display: block; width: 100%;
+    background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+    color: #fff; border: none; border-radius: 12px; padding: 12px;
+    font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer;
+  }
+  .music-fab {
+    position: fixed; left: 16px; bottom: 100px; z-index: 50;
+    width: 48px; height: 48px; border-radius: 50%;
+    background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+    color: #fff; border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+    cursor: grab; user-select: none; -webkit-user-select: none; touch-action: none;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0;
+  }
+  .music-fab.playing { animation: spin 4s linear infinite; }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .music-fab svg { width: 20px; height: 20px; }
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<div class="wrap">
+  <div class="logo-wrap">
+    <img class="logo-circle" src="https://aka.doubaocdn.com/s/Z9WjedLIWV" alt="南城">
+  </div>
+  <div class="topbar">
+    <button class="iconbtn" id="backBtn" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="clock-pill" id="clockPill">--:--</div>
+    <div class="clock-pill" id="weatherPill" style="min-width:auto; padding:0 10px;">--°</div>
+    <h1 id="pageTitle">我的导航站</h1>
+  </div>
+
+  <div class="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="7"/>
+      <line x1="21" y1="21" x2="16.5" y2="16.5"/>
+    </svg>
+    <input id="searchInput" type="text" placeholder="南城导航页®" autocomplete="off">
+  </div>
+
+  <div class="notice" id="homeNotice">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 11l18-7v16L3 13v-2z"/>
+      <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
+    </svg>
+    <div>本站内容由管理员维护，<b>TG频道@nanchengnb666</b></div>
+  </div>
+
+  <div class="meta" id="homeMeta">
+    <div class="status"><span class="dot"></span><span>在线:1</span><span class="dot" style="margin-left:6px"></span><span>延迟: <b id="latency">--</b>ms</span></div>
+    <a class="iconbtn pill-text" href="https://qm.qq.com/q/PFf8o7a1uo" target="_blank" rel="noopener">QQ客服</a>
+    <button class="iconbtn pill-text" id="shareBtn">分享</button>
+  </div>
+
+  <main id="main"></main>
+
+  <footer>南城账号</footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-mask" id="donateModal">
+  <div class="modal-box">
+    <button class="modal-close" id="donateClose">×</button>
+    <h3>赞赏作者</h3>
+    <img id="donateImg" src="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/ADB6b6ypkoW5LmxKyiLcF0mvnsb" alt="赞赏码">
+    <a class="modal-download" id="donateDownload" href="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/ADB6b6ypkoW5LmxKyiLcF0mvnsb" download="赞赏码.jpg">下载赞赏码</a>
+  </div>
+</div>
+
+<button class="donate-fab" id="donateFab">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+  </svg>
+  赞赏作者
+</button>
+
+<audio id="bgm" loop preload="auto" src=""></audio>
+<button class="music-fab" id="musicFab">
+  <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg>
+  <svg class="icon-pause" style="display:none" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+</button>
+
+<script>
+const DEFAULT_ICONS = [
+  '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M3 11h18"/><path d="M8 15h3"/>',
+  '<path d="M4 14v-3a8 8 0 0 1 16 0v3"/><rect x="2.5" y="13" width="4" height="6" rx="1.5"/><rect x="17.5" y="13" width="4" height="6" rx="1.5"/>',
+  '<path d="M17.5 19a4.5 4.5 0 0 0 .4-8.98A6 6 0 0 0 6.6 9.1 4 4 0 0 0 7 17"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 12 15 15"/>',
+  '<polyline points="4 5 10 5 10 19"/><line x1="7" y1="5" x2="7" y2="19"/><path d="M14 15l4-10 4 10"/><line x1="15.5" y1="11.5" x2="18.5" y2="11.5"/>',
+  '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/>',
+  '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="14" y1="14" x2="14" y2="21"/><line x1="18" y1="14" x2="21" y2="14"/><line x1="21" y1="18" x2="21" y2="21"/>',
+  '<polygon points="10 8 16 12 10 16 10 8" fill="white" stroke="none"/><circle cx="12" cy="12" r="9"/>',
+  '<path d="M3 7a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'
+];
+
+const CATS = [
+  {
+    name: "常用服务",
+    iconIdx: 0,
+    links: [
+      { name: "何平小号卡网", url: "https://007fk.oeisp.cn/shop/nanc", iconIdx: 0 },
+      { name: "PUBG八级号卡网", url: "https://new.818fka.com/shop/nanc", iconIdx: 0 },
+      { name: "卡网",     url: "https://example.com", iconIdx: 0 },
+      { name: "售后客服", url: "https://qm.qq.com/q/BgenutP5jq", iconIdx: 1 }
+    ]
+  },
+  {
+    name: "使用教程",
+    iconIdx: 3,
+    links: [
+      { name: "改语言教学", url: "https://example.com", iconIdx: 3 },
+      { name: "清理教学",   url: "https://example.com", iconIdx: 4 },
+      { name: "扫码教学",   url: "https://example.com", iconIdx: 5 },
+      { name: "视频教程",   url: "https://example.com", iconIdx: 6 }
+    ]
+  }
+];
+
+function iconSVG(idx) {
+  const p = DEFAULT_ICONS[(idx || 0) % DEFAULT_ICONS.length];
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+}
+
+function parseHash() {
+  const h = location.hash.replace(/^#\/?/, '');
+  if (h.startsWith('cat/')) return { page: 'cat', idx: parseInt(h.slice(4), 10) };
+  return { page: 'home' };
+}
+
+let search = '';
+const mainEl = document.getElementById('main');
+const titleEl = document.getElementById('pageTitle');
+const backBtn = document.getElementById('backBtn');
+const clockPill = document.getElementById('clockPill');
+const weatherPill = document.getElementById('weatherPill');
+const homeMeta = document.getElementById('homeMeta');
+const homeNotice = document.getElementById('homeNotice');
+
+function render() {
+  const r = parseHash();
+  if (r.page === 'home') {
+    titleEl.textContent = '南城导航首页';
+    backBtn.style.display = 'none';
+    clockPill.style.display = 'flex';
+    weatherPill.style.display = 'flex';
+    homeMeta.style.display = '';
+    homeNotice.style.display = 'flex';
+    renderHome();
+  } else {
+    const cat = CATS[r.idx];
+    if (!cat) { location.hash = '#/'; return; }
+    titleEl.textContent = cat.name;
+    backBtn.style.display = 'flex';
+    clockPill.style.display = 'none';
+    weatherPill.style.display = 'none';
+    homeMeta.style.display = 'none';
+    homeNotice.style.display = 'none';
+    renderCat(cat);
+  }
+}
+
+function renderHome() {
+  const q = search.trim().toLowerCase();
+  const cats = CATS.map((c, i) => ({...c, idx: i})).filter(c => !q || c.name.toLowerCase().includes(q));
+  if (cats.length === 0) { mainEl.innerHTML = '<div class="empty">没有找到相关分类</div>'; return; }
+  let html = '<div class="grid g2">';
+  cats.forEach(c => {
+    html += `
+      <a class="card cat-card" href="#/cat/${c.idx}">
+        <div class="icon">${iconSVG(c.iconIdx)}</div>
+        <span class="label">${c.name}</span>
+      </a>`;
+  });
+  html += '</div>';
+  html += `
+    <h2 class="section-title">快捷链接</h2>
+    <div class="grid g3">
+      <a class="card" href="https://1817002088.share.123pan.cn/123pan/axyyVv-YtWed" target="_blank" rel="noopener">
+        <div class="icon">${iconSVG(2)}</div>
+        <span class="label">网盘</span>
+      </a>
+      <a class="card" href="https://007fk.oeisp.cn/shop/nanc" target="_blank" rel="noopener">
+        <div class="icon">${iconSVG(0)}</div>
+        <span class="label">何平小号卡网</span>
+      </a>
+      <a class="card" href="https://new.818fka.com/shop/nanc" target="_blank" rel="noopener">
+        <div class="icon">${iconSVG(0)}</div>
+        <span class="label">PUBG八级号卡网</span>
+      </a>
+      <a class="card" href="https://example.com" target="_blank" rel="noopener">
+        <div class="icon">${iconSVG(0)}</div>
+        <span class="label">卡网</span>
+      </a>
+    </div>`;
+  mainEl.innerHTML = html;
+}
+
+function renderCat(cat) {
+  const q = search.trim().toLowerCase();
+  const links = cat.links.filter(l => !q || (l.name + ' ' + (l.url||'')).toLowerCase().includes(q));
+  if (links.length === 0) {
+    mainEl.innerHTML = `<h2 class="section-title">${cat.name}</h2><div class="empty">没有找到相关链接</div>`;
+    return;
+  }
+  let html = `<h2 class="section-title">${cat.name}</h2><div class="grid g3">`;
+  links.forEach(l => {
+    html += `
+      <a class="card" href="${l.url || '#'}" target="_blank" rel="noopener">
+        <div class="icon">${iconSVG(l.iconIdx)}</div>
+        <span class="label">${l.name}</span>
+      </a>`;
+  });
+  html += '</div>';
+  mainEl.innerHTML = html;
+}
+
+window.addEventListener('hashchange', () => {
+  search = '';
+  document.getElementById('searchInput').value = '';
+  render();
+});
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  search = e.target.value;
+  render();
+});
+
+backBtn.addEventListener('click', () => { location.hash = '#/'; });
+
+const toastEl = document.getElementById('toast');
+let toastTimer;
+function toast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1800);
+}
+
+document.getElementById('shareBtn').addEventListener('click', async () => {
+  const url = 'https://nanc.cc.cd';
+  if (navigator.share) {
+    try { await navigator.share({ title: '南城导航首页', url }); } catch (e) {}
+  } else {
+    try { await navigator.clipboard.writeText(url); toast('链接已复制：' + url); }
+    catch (e) { toast('请手动复制：' + url); }
+  }
+});
+
+render();
+
+/* 时钟 */
+(function() {
+  function tick() {
+    const d = new Date();
+    const h = String(d.getHours()).padStart(2, '0');
+    const m = String(d.getMinutes()).padStart(2, '0');
+    clockPill.textContent = h + ':' + m;
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+/* 天气 */
+(function() {
+  async function loadWeather() {
+    try {
+      const locRes = await fetch('https://ipapi.co/json/');
+      const loc = await locRes.json();
+      const lat = loc.latitude, lon = loc.longitude;
+      const wxRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,weather_code&timezone=auto`);
+      const wx = await wxRes.json();
+      const temp = Math.round(wx.current.temperature_2m);
+      const code = wx.current.weather_code;
+      const icons = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'⛈️',71:'🌨️',73:'🌨️',75:'❄️',80:'🌦️',81:'🌧️',82:'⛈️',95:'⛈️'};
+      weatherPill.textContent = (icons[code] || '🌡️') + ' ' + temp + '°';
+    } catch(e) {
+      weatherPill.textContent = '--°';
+    }
+  }
+  loadWeather();
+  setInterval(loadWeather, 600000);
+})();
+
+/* 延迟随机数 */
+(function() {
+  const el = document.getElementById('latency');
+  function tick() {
+    const ms = Math.floor(Math.random() * (1500 - 20 + 1)) + 20;
+    el.textContent = ms;
+    if (ms < 300) el.style.color = '#22c55e';
+    else if (ms <= 1000) el.style.color = '#e8a04b';
+    else el.style.color = '#ef4444';
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+
+/* 通用拖动+弹簧 */
+function makeDraggable(el, trailColor) {
+  let dragging = false, startX, startY, origX, origY, moved = false;
+  let lastX, lastY, lastTime, vx = 0, vy = 0, raf;
+  let tx = 0, ty = 0;
+  function getPos(e) { return e.touches ? e.touches[0] : e; }
+  function onStart(e) {
+    dragging = true; moved = false;
+    cancelAnimationFrame(raf);
+    const p = getPos(e);
+    startX = p.clientX; startY = p.clientY;
+    lastX = p.clientX; lastY = p.clientY; lastTime = Date.now();
+    vx = 0; vy = 0;
+    const rect = el.getBoundingClientRect();
+    origX = rect.left; origY = rect.top;
+    tx = origX; ty = origY;
+    el.style.right = 'auto';
+    el.style.bottom = 'auto';
+    el.style.left = origX + 'px';
+    el.style.top = origY + 'px';
+  }
+  function onMove(e) {
+    if (!dragging) return;
+    const p = getPos(e);
+    const now = Date.now();
+    const dt = now - lastTime;
+    if (dt > 0) { vx = (p.clientX - lastX) / dt; vy = (p.clientY - lastY) / dt; }
+    lastX = p.clientX; lastY = p.clientY; lastTime = now;
+    const dx = p.clientX - startX, dy = p.clientY - startY;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved = true;
+    const fw = el.offsetWidth, fh = el.offsetHeight;
+    const vw = document.documentElement.clientWidth;
+    const vh = document.documentElement.clientHeight;
+    let nx = origX + dx, ny = origY + dy;
+    nx = Math.max(4, Math.min(nx, vw - fw - 4));
+    ny = Math.max(4, Math.min(ny, vh - fh - 4));
+    tx = nx; ty = ny;
+    cancelAnimationFrame(raf);
+    springLoop();
+    if (e.cancelable) e.preventDefault();
+  }
+  function springLoop() {
+    let cx = parseFloat(el.style.left) || tx;
+    let cy = parseFloat(el.style.top) || ty;
+    const spring = 0.25;
+    cx += (tx - cx) * spring;
+    cy += (ty - cy) * spring;
+    if (Math.abs(tx - cx) < 0.3 && Math.abs(ty - cy) < 0.3) {
+      el.style.left = tx + 'px';
+      el.style.top = ty + 'px';
+      return;
+    }
+    el.style.left = cx + 'px';
+    el.style.top = cy + 'px';
+    raf = requestAnimationFrame(springLoop);
+  }
+  function onEnd() {
+    if (!dragging) return;
+    dragging = false;
+    let ix = vx * 8, iy = vy * 8;
+    function step() {
+      const fw = el.offsetWidth, fh = el.offsetHeight;
+      const vw = document.documentElement.clientWidth;
+      const vh = document.documentElement.clientHeight;
+      let cx = parseFloat(el.style.left) || 0;
+      let cy = parseFloat(el.style.top) || 0;
+      cx += ix; cy += iy;
+      ix *= 0.82; iy *= 0.82;
+      if (cx <= 4) { cx = 4; ix = Math.abs(ix) * 0.5; }
+      if (cx >= vw - fw - 4) { cx = vw - fw - 4; ix = -Math.abs(ix) * 0.5; }
+      if (cy <= 4) { cy = 4; iy = Math.abs(iy) * 0.5; }
+      if (cy >= vh - fh - 4) { cy = vh - fh - 4; iy = -Math.abs(iy) * 0.5; }
+      el.style.left = cx + 'px';
+      el.style.top = cy + 'px';
+      if (Math.abs(ix) > 0.2 || Math.abs(iy) > 0.2) raf = requestAnimationFrame(step);
+    }
+    raf = requestAnimationFrame(step);
+  }
+  el.addEventListener('mousedown', onStart);
+  el.addEventListener('touchstart', onStart, {passive: true});
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('touchmove', onMove, {passive: false});
+  window.addEventListener('mouseup', onEnd);
+  window.addEventListener('touchend', onEnd);
+  return function() { return moved; };
+}
+
+(function() {
+  const fab = document.getElementById('donateFab');
+  const wasMoved = makeDraggable(fab, '#f59e0b');
+  fab.addEventListener('click', () => {
+    if (wasMoved()) return;
+    document.getElementById('donateModal').classList.add('show');
+  });
+})();
+
+document.getElementById('donateClose').addEventListener('click', () => {
+  document.getElementById('donateModal').classList.remove('show');
+});
+document.getElementById('donateModal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
+});
+
+/* 音乐播放器 */
+(function() {
+  const audio = document.getElementById('bgm');
+  const btn = document.getElementById('musicFab');
+  const iconPlay = btn.querySelector('.icon-play');
+  const iconPause = btn.querySelector('.icon-pause');
+  audio.src = 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=chill-background.mp3';
+  const wasMoved = makeDraggable(btn, '#06b6d4');
+  btn.addEventListener('click', () => {
+    if (wasMoved()) return;
+    if (audio.paused) {
+      audio.play();
+      iconPlay.style.display = 'none';
+      iconPause.style.display = '';
+      btn.classList.add('playing');
+    } else {
+      audio.pause();
+      iconPlay.style.display = '';
+      iconPause.style.display = 'none';
+      btn.classList.remove('playing');
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
