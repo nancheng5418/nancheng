@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>简易导航页</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:system-ui, sans-serif}
+body{
+  background:#0f172a;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+.title{
+  color:#e2e8f0;
+  font-size:28px;
+  margin-bottom:40px;
+}
+.container{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:24px;
+  max-width:700px;
+  width:100%;
+}
+.nav-card{
+  background:#1e293b;
+  border-radius:18px;
+  padding:24px 16px;
+  text-align:center;
+  text-decoration:none;
+  transition:0.25s ease;
+  border:1px solid #334155;
+}
+.nav-card:hover{
+  transform:translateY(-6px);
+  background:#334155;
+  box-shadow:0 10px 30px rgba(0,0,0,0.35);
+}
+.card-img{
+  width:72px;
+  height:72px;
+  border-radius:12px;
+  object-fit:cover;
+  margin-bottom:14px;
+}
+.card-text{
+  color:#f1f5f9;
+  font-size:18px;
+  font-weight:500;
+}
+@media(max-width:600px){
+  .container{grid-template-columns:repeat(2,1fr);gap:18px;}
+  .card-img{width:64px;height:64px;}
+}
+</style>
+</head>
+<body>
+  <h1 class="title">我的导航</h1>
+  <div class="container">
+    <!-- ========== 按钮1（在这里修改图片、文字、链接 ========== -->
+    <a class="nav-card" href="nanc.cc.cd" target="_blank">
+      <img class="card-img" src="https://p3-flow-image-sign.byteimg.com/tos-cn-i-a9rns2rl98/24010180013440489021411400811111~tplv-a9rns2rl98-image.image" alt="">
+      <div class="card-text">南城</div>
+    </a>
+    <!-- ========== 按钮2 ========== -->
+    <a class="nav-card" href="https://new.818fka.com/shop/nanc" target="_blank">
+      <img class="card-img" src="https://p3-flow-image-sign.byteimg.com/tos-cn-i-a9rns2rl98/82223001147440488021411400811111~tplv-a9rns2rl98-image.image" alt="">
+      <div class="card-text">八级号</div>
+    </a>
+    <!-- ========== 按钮3 ========== -->
+    <a class="nav-card" href="https://github.com" target="_blank">
+      <img class="card-img" src="https://p3-flow-image-sign.byteimg.com/tos-cn-i-a9rns2rl98/77223001147440488021411400811111~tplv-a9rns2rl98-image.image" alt="">
+      <div class="card-text">Github</div>
+    </a>
+    <!-- ========== 按钮4 ========== -->
+    <a class="nav-card" href="https://www.zhihu.com" target="_blank">
+      <img class="card-img" src="https://p3-flow-image-sign.byteimg.com/tos-cn-i-a9rns2rl98/66223001147440488021411400811111~tplv-a9rns2rl98-image.image" alt="">
+      <div class="card-text">知乎</div>
+    </a>
+    <!-- ========== 按钮5 ========== -->
+    <a class="nav-card" href="https://juejin.cn" target="_blank">
+      <img class="card-img" src="https://p3-flow-image-sign.byteimg.com/tos-cn-i-a9rns2rl98/55223001147440488021411400811111~tplv-a9rns2rl98-image.image" alt="">
+      <div class="card-text">掘金</div>
+    </a>
+    <!-- ========== 按钮6 ========== -->
+    <a class="nav-card" href="https://www.xiaohongshu.com" target="_blank">
+      <img class="card-img" src="https://p3-flow-image-sign.byteimg.com/tos-cn-i-a9rns2rl98/44223001147440488021411400811111~tplv-a9rns2rl98-image.image" alt="">
+      <div class="card-text">小红书</div>
+    </a>
+  </div>
+</body>
+</html>
