@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0a0805">
+<title>我的导航站</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23d97706'/%3E%3Cpolygon points='10 8 16 12 10 16 10 8' fill='white'/%3E%3C/svg%3E">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --card-bg: rgba(18, 16, 14, 0.55);
+    --card-border: rgba(255, 255, 255, 0.10);
+    --pill-bg: rgba(18, 16, 14, 0.65);
+    --text: #f5f1ea;
+    --text-dim: rgba(245, 241, 234, 0.65);
+    --accent: #e8a04b;
+    --danger: #ef4444;
+  }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
+    color: var(--text);
+    background: #0a0805;
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+  .bg {
+    position: fixed; inset: 0;
+    background-size: cover; background-position: center;
+    z-index: -2; transition: background-image 0.3s;
+  }
+  .bg::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.45) 40%, rgba(0,0,0,0.78) 100%);
+  }
+  .wrap {
+    max-width: 480px; margin: 0 auto;
+    padding: env(safe-area-inset-top) 18px calc(env(safe-area-inset-bottom) + 28px);
+    min-height: 100vh; display: flex; flex-direction: column;
+  }
+  .topbar { display: flex; align-items: center; gap: 10px; padding-top: 18px; margin-bottom: 14px; }
+  .topbar h1 { flex: 1; font-size: 20px; font-weight: 700; text-align: center; letter-spacing: 0.5px; }
+  .iconbtn {
+    min-width: 40px; height: 40px; border-radius: 12px;
+    border: 1px solid var(--card-border);
+    background: var(--pill-bg);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    color: var(--text); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; transition: transform 0.15s; text-decoration: none;
+  }
+  .iconbtn:active { transform: scale(0.92); }
+  .iconbtn svg { width: 20px; height: 20px; }
+  .iconbtn.pill-text { padding: 0 14px; font-size: 13px; gap: 6px; }
+  .iconbtn.done { background: rgba(232, 160, 75, 0.25); border-color: rgba(232,160,75,0.4); }
+  .search {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--pill-bg); border: 1px solid var(--card-border);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-radius: 14px; padding: 11px 16px; margin-bottom: 12px;
+  }
+  .search svg { width: 18px; height: 18px; opacity: 0.7; flex-shrink: 0; }
+  .search input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-size: 15px; }
+  .search input::placeholder { color: var(--text-dim); }
+  .meta { display: flex; align-items: center; gap: 8px; margin-bottom: 22px; }
+  .status {
+    flex: 1; display: flex; align-items: center; gap: 7px;
+    background: var(--pill-bg); border: 1px solid var(--card-border);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-radius: 999px; padding: 9px 14px; font-size: 12px;
+    color: var(--text-dim); white-space: nowrap;
+  }
+  .dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 8px rgba(34,197,94,0.7); }
+  .section-title {
+    font-size: 18px; font-weight: 700; margin: 6px 0 12px;
+    padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+  .grid { display: grid; gap: 11px; }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .card {
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 9px;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-radius: 16px; padding: 14px 8px 12px;
+    text-decoration: none; color: var(--text);
+    transition: transform 0.15s, background 0.15s;
+  }
+  .card:active { transform: scale(0.95); background: rgba(40,36,32,0.65); }
+  .icon {
+    width: 54px; height: 54px; border-radius: 14px;
+    background: rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
+  }
+  .icon svg { width: 28px; height: 28px; }
+  .icon img { width: 100%; height: 100%; object-fit: cover; }
+  .cat-card .icon { width: 64px; height: 64px; border-radius: 16px; }
+  .cat-card .icon svg { width: 32px; height: 32px; }
+  .label { font-size: 12.5px; text-align: center; line-height: 1.25; color: var(--text); }
+  .edit-badge, .del-badge {
+    position: absolute; width: 22px; height: 22px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; border: none;
+    cursor: pointer; z-index: 5;
+  }
+  .edit-badge { top: -6px; right: -6px; background: var(--accent); color: #1a1208; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+  .del-badge { top: -6px; left: -6px; background: var(--danger); color: #fff; font-size: 13px; line-height: 1; box-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+  .add-card {
+    border: 1.5px dashed rgba(255,255,255,0.25); background: rgba(255,255,255,0.04);
+    color: var(--text-dim); justify-content: center; min-height: 110px;
+  }
+  .add-card .plus {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center;
+    font-size: 22px; font-weight: 300;
+  }
+  .add-card span { font-size: 12.5px; }
+  .bg-edit {
+    position: fixed; right: 16px; top: 70px; z-index: 20;
+    background: var(--accent); color: #1a1208; border: none; border-radius: 999px;
+    padding: 8px 14px; font-size: 12px; font-weight: 600;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4); display: none; align-items: center; gap: 5px; cursor: pointer;
+  }
+  .bg-edit.show { display: flex; }
+  .bg-edit svg { width: 14px; height: 14px; }
+  .empty { text-align: center; color: var(--text-dim); padding: 40px 0; font-size: 14px; }
+  footer { margin-top: auto; text-align: center; color: rgba(255,255,255,0.35); font-size: 11px; padding-top: 24px; }
+  .toast {
+    position: fixed; left: 50%; bottom: 80px;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(0,0,0,0.85); color: #fff; padding: 10px 20px;
+    border-radius: 999px; font-size: 13px; opacity: 0; pointer-events: none;
+    transition: opacity 0.25s, transform 0.25s; z-index: 99;
+    backdrop-filter: blur(10px); white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #fileInput { display: none; }
+  .notice {
+    display: flex; align-items: flex-start; gap: 9px;
+    background: rgba(232, 160, 75, 0.12);
+    border: 1px solid rgba(232, 160, 75, 0.3);
+    border-radius: 12px; padding: 10px 13px; margin-bottom: 14px;
+    font-size: 12px; line-height: 1.5; color: rgba(245, 241, 234, 0.85);
+  }
+  .notice svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; color: var(--accent); }
+  .notice b { color: var(--accent); font-weight: 600; }
+  .notice-edit {
+    margin-left: auto; flex-shrink: 0;
+    width: 26px; height: 26px; border-radius: 50%; border: none;
+    background: rgba(232, 160, 75, 0.3); color: var(--accent);
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg" id="bgEl"></div>
+
+<div class="wrap">
+  <div class="topbar">
+    <button class="iconbtn" id="backBtn" style="visibility:hidden">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <h1 id="pageTitle">我的导航站</h1>
+    <button class="iconbtn pill-text" id="editBtn">编辑</button>
+  </div>
+
+  <div class="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="7"/>
+      <line x1="21" y1="21" x2="16.5" y2="16.5"/>
+    </svg>
+    <input id="searchInput" type="text" placeholder="搜索..." autocomplete="off">
+  </div>
+
+  <div class="notice" id="homeNotice">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 11l18-7v16L3 13v-2z"/>
+      <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>
+    </svg>
+    <div id="noticeText"></div>
+    <button class="notice-edit" id="noticeEditBtn" style="display:none">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+    </button>
+  </div>
+
+  <div class="meta" id="homeMeta">
+    <div class="status"><span class="dot"></span><span>在线</span></div>
+    <a class="iconbtn pill-text" href="https://nanc.cc.cd" target="_blank" rel="noopener">主页</a>
+    <button class="iconbtn pill-text" id="shareBtn">分享</button>
+  </div>
+
+  <main id="main"></main>
+
+  <footer>© 2025 我的导航站</footer>
+</div>
+
+<button class="bg-edit" id="bgEditBtn">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+  换背景
+</button>
+
+<input type="file" id="fileInput" accept="image/*">
+<div class="toast" id="toast"></div>
+
+<script>
+/* ==================== 数据 ==================== */
+const DEFAULT_BG = "https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/HreSbtwt9ocmU3xUk0jckg88n0c";
+
+// ★ 编辑密码：改成你自己的密码
+const EDIT_PASSWORD = '1763568';
+
+function uid() { return 'id_' + Math.random().toString(36).slice(2, 9); }
+
+function defaultData() {
+  return {
+    bg: DEFAULT_BG,
+    notice: "本站内容由管理员维护，普通访客无法编辑。如需修改，请通过右上角「编辑」入口输入密码进入编辑模式。",
+    cats: [
+      {
+        id: uid(), name: "常用服务", icon: "",
+        links: [
+          { id: uid(), name: "卡网",     url: "https://example.com", icon: "", iconIdx: 0 },
+          { id: uid(), name: "售后客服", url: "https://example.com", icon: "", iconIdx: 1 },
+          { id: uid(), name: "网盘",     url: "https://example.com", icon: "", iconIdx: 2 }
+        ]
+      },
+      {
+        id: uid(), name: "使用教程", icon: "",
+        links: [
+          { id: uid(), name: "改语言教学", url: "https://example.com", icon: "", iconIdx: 3 },
+          { id: uid(), name: "清理教学",   url: "https://example.com", icon: "", iconIdx: 4 },
+          { id: uid(), name: "扫码教学",   url: "https://example.com", icon: "", iconIdx: 5 },
+          { id: uid(), name: "视频教程",   url: "https://example.com", icon: "", iconIdx: 6 }
+        ]
+      }
+    ]
+  };
+}
+
+const STORE_KEY = 'navsite_v1';
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return defaultData();
+}
+function persist() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state.data)); }
+  catch (e) { toast('图片过大，未能保存（建议压缩后再试）'); }
+}
+
+let state = {
+  data: loadData(),
+  route: { page: 'home' },
+  editing: false,
+  search: ''
+};
+
+/* ==================== 默认图标 ==================== */
+const DEFAULT_ICONS = [
+  '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M3 11h18"/><path d="M8 15h3"/>',
+  '<path d="M4 14v-3a8 8 0 0 1 16 0v3"/><rect x="2.5" y="13" width="4" height="6" rx="1.5"/><rect x="17.5" y="13" width="4" height="6" rx="1.5"/>',
+  '<path d="M17.5 19a4.5 4.5 0 0 0 .4-8.98A6 6 0 0 0 6.6 9.1 4 4 0 0 0 7 17"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 12 15 15"/>',
+  '<polyline points="4 5 10 5 10 19"/><line x1="7" y1="5" x2="7" y2="19"/><path d="M14 15l4-10 4 10"/><line x1="15.5" y1="11.5" x2="18.5" y2="11.5"/>',
+  '<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/>',
+  '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><line x1="14" y1="14" x2="14" y2="21"/><line x1="18" y1="14" x2="21" y2="14"/><line x1="21" y1="18" x2="21" y2="21"/>',
+  '<polygon points="10 8 16 12 10 16 10 8" fill="white" stroke="none"/><circle cx="12" cy="12" r="9"/>',
+  '<path d="M3 7a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>'
+];
+function iconSVG(idx) {
+  const p = DEFAULT_ICONS[(idx || 0) % DEFAULT_ICONS.length];
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+}
+function renderIcon(item, sizeCls) {
+  if (item.icon) return `<div class="icon ${sizeCls||''}"><img src="${item.icon}" alt=""></div>`;
+  return `<div class="icon ${sizeCls||''}">${iconSVG(item.iconIdx)}</div>`;
+}
+
+/* ==================== 路由 ==================== */
+function parseHash() {
+  const h = location.hash.replace(/^#\/?/, '');
+  if (h.startsWith('cat/')) return { page: 'cat', catId: decodeURIComponent(h.slice(4)) };
+  return { page: 'home' };
+}
+window.addEventListener('hashchange', () => {
+  state.route = parseHash();
+  state.search = '';
+  document.getElementById('searchInput').value = '';
+  render();
+});
+
+/* ==================== 渲染 ==================== */
+const mainEl = document.getElementById('main');
+const bgEl = document.getElementById('bgEl');
+const titleEl = document.getElementById('pageTitle');
+const backBtn = document.getElementById('backBtn');
+const editBtn = document.getElementById('editBtn');
+const homeMeta = document.getElementById('homeMeta');
+const homeNotice = document.getElementById('homeNotice');
+const bgEditBtn = document.getElementById('bgEditBtn');
+
+function render() {
+  bgEl.style.backgroundImage = `url("${state.data.bg || DEFAULT_BG}")`;
+  const r = state.route;
+  editBtn.textContent = state.editing ? '完成' : '编辑';
+  editBtn.classList.toggle('done', state.editing);
+  bgEditBtn.classList.toggle('show', state.editing);
+
+  if (r.page === 'home') {
+    titleEl.textContent = '我的导航站';
+    backBtn.style.visibility = 'hidden';
+    homeMeta.style.display = '';
+    homeNotice.style.display = 'flex';
+    document.getElementById('noticeText').textContent = state.data.notice || '';
+    document.getElementById('noticeEditBtn').style.display = state.editing ? 'flex' : 'none';
+    renderHome();
+  } else {
+    const cat = state.data.cats.find(c => c.id === r.catId);
+    if (!cat) { location.hash = '#/'; return; }
+    titleEl.textContent = cat.name;
+    backBtn.style.visibility = 'visible';
+    homeMeta.style.display = 'none';
+    homeNotice.style.display = 'none';
+    renderCat(cat);
+  }
+}
+
+const CAMERA_SVG = '<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>';
+
+function renderHome() {
+  const q = state.search.trim().toLowerCase();
+  const cats = state.data.cats.filter(c => !q || c.name.toLowerCase().includes(q));
+  let html = '';
+  if (cats.length === 0 && !state.editing) {
+    html = '<div class="empty">没有找到相关分类</div>';
+  } else {
+    html += '<div class="grid g2">';
+    cats.forEach(c => {
+      html += `
+        <a class="card cat-card" href="#/cat/${encodeURIComponent(c.id)}">
+          ${state.editing ? `<button class="del-badge" data-del-cat="${c.id}">×</button><button class="edit-badge" data-edit-cat-icon="${c.id}">${CAMERA_SVG}</button>` : ''}
+          ${renderIcon(c, 'cat-icon')}
+          <span class="label">${escapeHtml(c.name)}</span>
+        </a>`;
+    });
+    if (state.editing) {
+      html += `<button class="card add-card" data-add-cat><div class="plus">+</div><span>添加分类</span></button>`;
+    }
+    html += '</div>';
+  }
+  mainEl.innerHTML = html;
+  bindHomeEvents();
+}
+
+function renderCat(cat) {
+  const q = state.search.trim().toLowerCase();
+  const links = cat.links.filter(l => !q || (l.name + ' ' + (l.url||'')).toLowerCase().includes(q));
+  let html = `<h2 class="section-title">${escapeHtml(cat.name)}</h2>`;
+  if (links.length === 0 && !state.editing) {
+    html += '<div class="empty">没有找到相关链接</div>';
+  } else {
+    html += '<div class="grid g3">';
+    links.forEach(l => {
+      html += `
+        <a class="card" href="${l.url || '#'}" target="_blank" rel="noopener">
+          ${state.editing ? `<button class="del-badge" data-del-link="${l.id}">×</button><button class="edit-badge" data-edit-link-icon="${l.id}">${CAMERA_SVG}</button>` : ''}
+          ${renderIcon(l)}
+          <span class="label">${escapeHtml(l.name)}</span>
+        </a>`;
+    });
+    if (state.editing) {
+      html += `<button class="card add-card" data-add-link><div class="plus">+</div><span>添加链接</span></button>`;
+    }
+    html += '</div>';
+  }
+  mainEl.innerHTML = html;
+  bindCatEvents(cat);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+/* ==================== 事件 ==================== */
+function bindHomeEvents() {
+  mainEl.querySelectorAll('[data-del-cat]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault(); e.stopPropagation();
+      if (confirm('删除这个分类及其所有链接？')) {
+        state.data.cats = state.data.cats.filter(c => c.id !== btn.dataset.delCat);
+        persist(); render();
+      }
+    });
+  });
+  mainEl.querySelectorAll('[data-edit-cat-icon]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault(); e.stopPropagation();
+      pickImage(t => {
+        const c = state.data.cats.find(x => x.id === btn.dataset.editCatIcon);
+        if (c) { c.icon = t; persist(); render(); }
+      });
+    });
+  });
+  mainEl.querySelectorAll('[data-add-cat]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const name = prompt('分类名称：');
+      if (name && name.trim()) {
+        state.data.cats.push({ id: uid(), name: name.trim(), icon: '', links: [] });
+        persist(); render();
+      }
+    });
+  });
+}
+
+function bindCatEvents(cat) {
+  mainEl.querySelectorAll('[data-del-link]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault(); e.stopPropagation();
+      cat.links = cat.links.filter(l => l.id !== btn.dataset.delLink);
+      persist(); render();
+    });
+  });
+  mainEl.querySelectorAll('[data-edit-link-icon]').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.preventDefault(); e.stopPropagation();
+      pickImage(t => {
+        const l = cat.links.find(x => x.id === btn.dataset.editLinkIcon);
+        if (l) { l.icon = t; persist(); render(); }
+      });
+    });
+  });
+  mainEl.querySelectorAll('[data-add-link]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const name = prompt('链接名称：');
+      if (!name || !name.trim()) return;
+      const url = prompt('跳转网址（含 https://）：') || '';
+      cat.links.push({ id: uid(), name: name.trim(), url: url.trim(), icon: '' });
+      persist(); render();
+    });
+  });
+}
+
+/* ==================== 换图 ==================== */
+const fileInput = document.getElementById('fileInput');
+function pickImage(cb) {
+  fileInput.value = '';
+  fileInput.onchange = () => {
+    const f = fileInput.files[0];
+    if (!f) return;
+    if (f.size > 2 * 1024 * 1024) compressImage(f, cb);
+    else { const r = new FileReader(); r.onload = () => cb(r.result); r.readAsDataURL(f); }
+  };
+  fileInput.click();
+}
+function compressImage(file, cb) {
+  const img = new Image();
+  const url = URL.createObjectURL(file);
+  img.onload = () => {
+    const canvas = document.createElement('canvas');
+    const scale = Math.min(1, 400 / Math.max(img.width, img.height));
+    canvas.width = img.width * scale;
+    canvas.height = img.height * scale;
+    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+    URL.revokeObjectURL(url);
+    cb(canvas.toDataURL('image/jpeg', 0.85));
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); toast('图片读取失败'); };
+  img.src = url;
+}
+
+bgEditBtn.addEventListener('click', () => {
+  pickImage(t => { state.data.bg = t; persist(); render(); toast('背景已更换'); });
+});
+
+document.getElementById('noticeEditBtn').addEventListener('click', () => {
+  const t = prompt('编辑公告内容：', state.data.notice || '');
+  if (t !== null) {
+    state.data.notice = t.trim();
+    persist(); render();
+  }
+});
+
+/* ==================== 顶部按钮 ==================== */
+editBtn.addEventListener('click', () => {
+  if (!state.editing) {
+    const unlocked = sessionStorage.getItem('navsite_unlocked') === '1';
+    if (!unlocked) {
+      const pwd = prompt('请输入编辑密码：');
+      if (pwd === null) return;
+      if (pwd !== EDIT_PASSWORD) { toast('密码错误'); return; }
+      sessionStorage.setItem('navsite_unlocked', '1');
+    }
+    state.editing = true;
+  } else {
+    state.editing = false;
+  }
+  render();
+});
+backBtn.addEventListener('click', () => { location.hash = '#/'; });
+document.getElementById('searchInput').addEventListener('input', e => { state.search = e.target.value; render(); });
+
+const toastEl = document.getElementById('toast');
+let toastTimer;
+function toast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 1800);
+}
+
+document.getElementById('shareBtn').addEventListener('click', async () => {
+  const url = 'https://nanc.cc.cd';
+  if (navigator.share) {
+    try { await navigator.share({ title: '我的导航站', url }); } catch (e) {}
+  } else {
+    try { await navigator.clipboard.writeText(url); toast('链接已复制：' + url); }
+    catch (e) { toast('请手动复制：' + url); }
+  }
+});
+
+/* ==================== 启动 ==================== */
+state.route = parseHash();
+render();
+</script>
+
+</body>
+</html>
