@@ -1,44 +1,44 @@
-<!DOCTYPE html>
+
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0a0805">
-<title>我的导航站</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23d97706'/%3E%3Cpolygon points='10 8 16 12 10 16 10 8' fill='white'/%3E%3C/svg%3E">
-<style>
+<标题>我的导航站</标题>
+<链接 关系="图标" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='11' fill='%23d97706'/%3E%3Cpolygon points='10 8 16 12 10 16 10 8' fill='white'/%3E%3C/svg%3E">
+<样式>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  :root {
+  :根 {
     --card-bg: rgba(18, 16, 14, 0.55);
     --card-border: rgba(255, 255, 255, 0.10);
     --pill-bg: rgba(18, 16, 14, 0.65);
-    --text: #f5f1ea;
+    --文本: #f5f1ea;
     --text-dim: rgba(245, 241, 234, 0.65);
     --accent: #e8a04b;
-    --danger: #ef4444;
+    --危险: #ef4444;
   }
   html, body { height: 100%; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
-    color: var(--text);
-    background: #0a0805;
-    min-height: 100vh;
-    position: relative;
+  body {{
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Segoe UI", sans-serif;
+    颜色: var(--text);color: var(--text);
+    背景：#0a0805;
+    最小高度：100vh;
+    定位：相对
     overflow-x: hidden;
   }
   .bg {
-    position: fixed; inset: 0;
-    background-size: cover; background-position: center;
+    定位：固定；内边距：0；
+    背景大小：覆盖；背景位置：居中；
     z-index: -2; transition: background-image 0.3s;
   }
   .bg::after {
-    content: ""; position: absolute; inset: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.45) 40%, rgba(0,0,0,0.78) 100%);
+    内容: "" ; 位置: 绝对; 边距: 0;
+    背景：线性渐变(180度，0%处为rgba(0,0,0,0.55)，40%处为rgba(0,0,0,0.45)，100%处为rgba(0,0,0,0.78))
   }
   .wrap {
-    max-width: 480px; margin: 0 auto;
+    最大宽度：480px；居中显示；
     padding: env(safe-area-inset-top) 18px calc(env(safe-area-inset-bottom) + 28px);
-    min-height: 100vh; display: flex; flex-direction: column;
+    最小高度：100vh；显示：flex；flex-direction：column；
   }
   .topbar { display: flex; align-items: center; gap: 10px; padding-top: 18px; margin-bottom: 14px; }
   .topbar h1 { flex: 1; font-size: 20px; font-weight: 700; text-align: center; letter-spacing: 0.5px; }
